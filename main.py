@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 '''BASECLASS'''
 
 
-class movisens2python():
+class movisens():
     '''
     Klasse zum einlesen und bereitstellen von Movisensdaten in Python, zuvor abgespeichert im CSV-Format
     '''
@@ -215,7 +215,7 @@ class movisens2python():
 '''SUBCLASSES'''
 
 
-class rootAttributes(movisens2python):
+class rootAttributes(movisens):
     '''RootAttributes'''
 
     def __init__(self):
@@ -225,7 +225,7 @@ class rootAttributes(movisens2python):
         self.timestampStart = None
 
 
-class customAttributes(movisens2python):
+class customAttributes(movisens):
     '''Custom Attributes'''
 
     def __init__(self):
@@ -242,7 +242,7 @@ class customAttributes(movisens2python):
         self.weight = None
 
 
-class signalEntry(movisens2python):
+class signalEntry(movisens):
     '''SignalEntry'''
 
     def __init__(self):
@@ -260,7 +260,7 @@ class signalEntry(movisens2python):
         self.signal = None
 
 
-class valuesEntry(movisens2python):
+class valuesEntry(movisens):
     '''ValuesEntry'''
 
     def __init__(self):
@@ -278,7 +278,7 @@ class valuesEntry(movisens2python):
         self.values = None
 
 
-class eventEntry(movisens2python):
+class eventEntry(movisens):
     '''EventEntry'''
 
     def __init__(self):
@@ -363,7 +363,7 @@ def m2pconverter(*signaltypes, **keywords):
         extrafile = None
 
     # Objekt erstellen
-    movisensobject = movisens2python()
+    movisensobject = movisens()
     # Daten auswhählen
     movisensobject.movisens_choosedata()
     # Funktion zum Hinzufügen von Extrafiles
