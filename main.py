@@ -44,7 +44,7 @@ class movisens():
                                 'movementacceleration_live', 'nn_live','nnlist', 'press', 'stateofcharge', 'stepcount_live', 'temp', 'tempmean_live','eda',
                                 'EMG1','EMG2','EMG3','EMG4','EMG5','EMG6','EMG7','EMG8','EEG3','EEG5','ECG6','seizures','m6seizures','m6emgseizures','bicepsseizures']
 
-    def movisens_choosedata(self, extension='.xml', datatype='unisens'):
+    def choose_data(self, extension='.xml', datatype='unisens'):
         '''Funktion zum Auswählen der Daten'''
         root = Tk()  # TinkerDialog öffnen
         root.withdraw()  # Tinkerfenster verstecken
@@ -61,7 +61,7 @@ class movisens():
             self.filename = os.path.split(self.filepfad)[1]
         self.name = os.path.splitext(self.filename)[0]
 
-    def movisens_customsettings(self, Datenliste, Start, Dauer):
+    def set_customsettings(self, Datenliste, Start, Dauer):
         '''Funktion zur Bearbeitung der Custom Input Parameter'''
         if not Datenliste:
             self.readinlist = self.defaultcontents
@@ -71,10 +71,10 @@ class movisens():
         self.start = Start
         self.dauer = Dauer
 
-    def movisens_add_content(self, name):
+    def add_content(self, name):
         self.defaultcontents.append(name)
 
-    def movisens_get_XML(self):
+    def get_xml(self):
         '''Funktion zum Lesen der XML-Unisens Informationen '''
 
         # Namespace und Wurzel deklarieren
@@ -83,13 +83,13 @@ class movisens():
         wurzel = tree.getroot()
 
         # RootAttributes
-        self.rootinfo = rootAttributes()
+        self.rootinfo = root_attributes()
         for key, val in wurzel.attrib.items():
             if hasattr(self.rootinfo, key):
                 setattr(self.rootinfo, key, val)
 
         # CustomAttributes
-        self.custominfo = customAttributes()
+        self.custominfo = custom_attributes()
         for customatt in wurzel.findall('uni:customAttributes/uni:customAttribute', namespaces=unisensspace):
             if hasattr(self.custominfo, customatt.attrib['key']):
                 setattr(
@@ -100,7 +100,7 @@ class movisens():
             if signal.attrib['id'].split('.')[0] in self.readinlist:
 
                 # Signaleintrag erstellen
-                self.signalEntry = signalEntry()
+                self.signalEntry = signal_entry()
 
                 # Attributes speichern
                 for key, value in signal.attrib.items():
@@ -142,7 +142,7 @@ class movisens():
             if values.attrib['id'].split('.')[0] in self.readinlist:
 
                 # Valueseintrag erstellen
-                self.valuesEntry = valuesEntry()
+                self.valuesEntry = values_entry()
 
                 # Attributes speichern
                 for key, value in values.attrib.items():
@@ -175,7 +175,7 @@ class movisens():
             if event.attrib['id'].split('.')[0] in self.readinlist:
 
                 # Eventeintrag erstellen
-                self.eventEntry = eventEntry()
+                self.eventEntry = event_entry()
 
                 # Attributes speichern
                 for key, value in event.attrib.items():
@@ -198,24 +198,24 @@ class movisens():
                 rename_attribute(self, 'eventEntry',
                                  event.attrib['id'].split('.')[0])
 
-    def getentry(self, name):
+    def get_entry(self, name):
         '''Funktion zur Herausgabe von Informationen eines bestimmten Entrytyps'''
         # SignalEntry
         subclassenobject = getattr(self, name)
-        if isinstance(subclassenobject, signalEntry):
+        if isinstance(subclassenobject, signal_entry):
             return subclassenobject
         # ValuesEntry
-        elif isinstance(subclassenobject, valuesEntry):
+        elif isinstance(subclassenobject, values_entry):
             return subclassenobject
         # EventEntry
-        elif isinstance(subclassenobject, eventEntry):
+        elif isinstance(subclassenobject, event_entry):
             return subclassenobject
 
 
 '''SUBCLASSES'''
 
 
-class rootAttributes(movisens):
+class root_attributes(movisens):
     '''RootAttributes'''
 
     def __init__(self):
@@ -225,7 +225,7 @@ class rootAttributes(movisens):
         self.timestampStart = None
 
 
-class customAttributes(movisens):
+class custom_attributes(movisens):
     '''Custom Attributes'''
 
     def __init__(self):
@@ -242,7 +242,7 @@ class customAttributes(movisens):
         self.weight = None
 
 
-class signalEntry(movisens):
+class signal_entry(movisens):
     '''SignalEntry'''
 
     def __init__(self):
@@ -260,7 +260,7 @@ class signalEntry(movisens):
         self.signal = None
 
 
-class valuesEntry(movisens):
+class values_entry(movisens):
     '''ValuesEntry'''
 
     def __init__(self):
@@ -278,7 +278,7 @@ class valuesEntry(movisens):
         self.values = None
 
 
-class eventEntry(movisens):
+class event_entry(movisens):
     '''EventEntry'''
 
     def __init__(self):
@@ -301,7 +301,7 @@ def rename_attribute(obj, old_name, new_name):
 '''MAIN'''
 
 
-def m2pconverter(*signaltypes, **keywords):
+def convert(*signaltypes, **keywords):
     '''
     Funktion zur Erstellung eines Movisens Objekts
 
@@ -365,21 +365,21 @@ def m2pconverter(*signaltypes, **keywords):
     # Objekt erstellen
     movisensobject = movisens()
     # Daten auswhählen
-    movisensobject.movisens_choosedata()
+    movisensobject.choose_data()
     # Funktion zum Hinzufügen von Extrafiles
     if extrafile != None:
-        movisensobject.movisens_add_content(extrafile)
+        movisensobject.add_content(extrafile)
     # Funktion zur Bearbeitung der Eingabeparameter
-    movisensobject.movisens_customsettings(datalist, start, dauer)
+    movisensobject.set_customsettings(datalist, start, dauer)
     # XML einlesen
-    movisensobject.movisens_get_XML()
+    movisensobject.get_xml()
 
     # XML Baum zeigen [Default None]
     if 'showtree' in keywords:
         if keywords['showtree'] == True:
             print('Movisensobjekt')
             for key in movisensobject.__dict__:
-                if isinstance(movisensobject.__dict__[key], (rootAttributes, customAttributes, signalEntry, valuesEntry, eventEntry)):
+                if isinstance(movisensobject.__dict__[key], (root_attributes, custom_attributes, signal_entry, values_entry, event_entry)):
                     print(f'-->{key}')
                     for ykey in movisensobject.__dict__[key].__dict__:
                         # if movisensobject.__dict__[key].__dict__[ykey] != None:
@@ -407,13 +407,13 @@ if __name__ == '__main__':
     '''
 
     # Objekt erstellen, mit Signaltyp ECG
-    movisensobject = m2pconverter(showtree=True)
+    movisensobject = convert(showtree=True)
 
     # SignalEntry ECG und ValuesEntry NN_Live auslesen
-    ecg = movisensobject.getentry('ecg')
+    ecg = movisensobject.get_entry('ecg')
     ecg_signal = (ecg.signal - int(ecg.baseline)) * float(ecg.lsbValue)
     ecg_fs = ecg.sampleRate
-    rpeaks = movisensobject.getentry('nn_live').values
+    rpeaks = movisensobject.get_entry('nn_live').values
 
     # Plot erstellen
 
