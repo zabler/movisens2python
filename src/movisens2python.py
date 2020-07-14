@@ -56,6 +56,11 @@ class Movisens():
         else:
             self.filename = os.path.split(self.filepfad)[1]
         self.name = os.path.splitext(self.filename)[0]
+    
+    def add_path(self, path):
+        self.filepfad, self.filename = os.path.split(path)
+        self.name = os.path.splitext(self.filename)[0]
+
 
     def set_customsettings(self, datenliste, start, dauer):
         '''Funktion zur Bearbeitung der Custom Input Parameter'''
@@ -364,7 +369,10 @@ def convert(*signal_types, **keywords):
     # Objekt erstellen
     movisens_object = Movisens()
     # Daten auswhählen
-    movisens_object.choose_data()
+    if 'path' not in keywords:
+        movisens_object.choose_data()
+    else:
+        movisens_object.add_path(keywords['path'])
     # Funktion zum Hinzufügen von Extrafiles
     if extrafile is not None:
         movisens_object.add_content(extrafile)
